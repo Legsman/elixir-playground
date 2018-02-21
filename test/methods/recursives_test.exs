@@ -11,4 +11,9 @@ defmodule RecursivesTest do
     assert Recursives.range(1, 5) == [1,2,3,4,5]
     assert Recursives.range(3, 0) == []
   end
+
+  test "positive/1 returns list that contains only positive number for given list" do
+    assert Recursives.positive([1, 5, -8, 3, -7]) == [1, 5, 8, 3, 7]
+    assert Recursives.positive([]) == []
+  end
 end

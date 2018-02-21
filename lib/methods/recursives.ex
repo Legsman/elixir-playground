@@ -38,4 +38,20 @@ defmodule Recursives do
     make_range(from, to - 1, [to | result])
   end
 
+  ##
+  # positive/1
+  # Function that takes a list and returns another list that contains only positive
+  # numbers from the input list
+  def positive(list) do
+    convert_to_positive(list, [])
+  end
+
+  # At this point we have the result, or if list provided empty
+  defp convert_to_positive([], positives), do: Enum.reverse(positives)
+
+  # Prepend absolute number of provided list head to positives
+  defp convert_to_positive([head | tail], positives) do
+    convert_to_positive(tail, [abs(head) | positives])
+  end
+
 end
