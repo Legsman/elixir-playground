@@ -18,4 +18,9 @@ defmodule StreamsTest do
     assert Streams.longest_line(csv_fixture("lengthy")) == "Classic Hardcore Sheet Bundle"
   end
 
+  test "words_per_line/1 function returns the word count for each line in a file" do
+    assert Streams.words_per_line(csv_fixture("empty")) == []
+    assert Streams.words_per_line(csv_fixture("lengthy")) == [2, 2, 2, 2, 4]
+  end
+
 end

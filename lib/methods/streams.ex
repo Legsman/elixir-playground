@@ -31,6 +31,16 @@ defmodule Streams do
     |> Enum.reduce("", &longer_line/2)
   end
 
+  ##
+  # words_per_line/1
+  # Returns a list of numbers, with each numbers representing the word count for
+  # each line of a file
+  def words_per_line(path) do
+    filtered_lines!(path)
+    |> Stream.map(&String.split(&1))
+    |> Enum.map(&length(&1))
+  end
+
     defp filtered_lines!(path) do
       File.stream!(path)
       |> Stream.map(&String.replace(&1, "\n", ""))
