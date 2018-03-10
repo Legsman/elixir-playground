@@ -26,6 +26,18 @@ defmodule TodoList do
     end
   end
 
+  def delete_entry(%TodoList{entries: entries} = todo_list, entry_id) do
+    case entries[entry_id] do
+      # Returns the unchanged list if entry not found
+      nil -> todo_list
+      old_entry ->
+        # Delete entry using entry id if found
+        new_entries = Map.delete(entries, old_entry.id)
+        # Returns TodoList with updated entries
+        %TodoList{todo_list | entries: new_entries}
+    end
+  end
+
   def entries(%TodoList{entries: entries}, date) do
     entries
     # First find the entries for date given

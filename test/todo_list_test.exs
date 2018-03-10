@@ -1,6 +1,5 @@
 defmodule TodoListTest do
   use ExUnit.Case
-  import TestHelper
   doctest TodoList
 
   test "can add and read entry to todo_list" do
@@ -26,5 +25,15 @@ defmodule TodoListTest do
 
     assert TodoList.update_entry(todo_list, 1, &Map.put(&1, :title, "New Entry")) == %TodoList{auto_id: 2,
              entries: %{1 => %{date: {2017, 9, 10}, id: 1, title: "New Entry"}}}
+  end
+
+  test "can delete entry" do
+    entries = [
+      %{ date: {2017, 09, 10}, title: "New Entry"},
+      %{ date: {2017, 09, 11}, title: "New Entry 2"}
+    ]
+    todo_list = Enum.reduce(entries, TodoList.new, &TodoList.add_entry(&2, &1))
+
+    assert TodoList.delete_entry(todo_list, 2) == %TodoList{auto_id: 3, entries: %{1 => %{date: {2017, 9, 10}, id: 1, title: "New Entry"}}}
   end
 end
