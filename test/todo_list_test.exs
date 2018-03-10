@@ -19,4 +19,12 @@ defmodule TodoListTest do
 
     assert TodoList.entries(todo_list, {2017, 9, 11}) == [%{date: {2017, 9, 11}, id: 2, title: "New Entry 2"}]
   end
+
+  test "can update entry" do
+    todo_list = TodoList.new
+    |> TodoList.add_entry(%{ date: {2017, 09, 10}, title: "Old Entry"})
+
+    assert TodoList.update_entry(todo_list, 1, &Map.put(&1, :title, "New Entry")) == %TodoList{auto_id: 2,
+             entries: %{1 => %{date: {2017, 9, 10}, id: 1, title: "New Entry"}}}
+  end
 end
