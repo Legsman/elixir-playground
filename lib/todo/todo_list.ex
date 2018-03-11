@@ -1,7 +1,9 @@
 defmodule TodoList do
   defstruct auto_id: 1, entries: Map.new
-  # Initializer function
-  def new, do: %TodoList{}
+  # Initializer function, can accept multiple entries via a list
+  def new(entries \\ []) do
+    Enum.reduce(entries, %TodoList{}, &add_entry(&2, &1))
+  end
 
   def add_entry(%TodoList{entries: entries, auto_id: auto_id} = todo_list, entry) do
     # Add :id to entry which should be a date
