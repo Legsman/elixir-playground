@@ -2,12 +2,12 @@ defmodule TodoList.CsvImporter do
 
   def import(path) do
     path
-    |> filtered_lines!
+    |> filter_lines!
     |> create_entries!
     |> TodoList.new
   end
 
-    defp filtered_lines!(path) do
+    defp filter_lines!(path) do
       path
       |> File.stream!
       |> Stream.map(&String.replace(&1, "\n", ""))

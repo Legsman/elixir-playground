@@ -49,4 +49,23 @@ defmodule TodoListTest do
     }
     assert expected_result == TodoList.CsvImporter.import(csv_fixture("entries"))
   end
+
+  test "test protocol implentation for 'into' function for TodoList" do
+    entries = [
+      %{ date: {2017, 09, 10}, title: "New Entry"},
+      %{ date: {2017, 09, 11}, title: "New Entry 2"},
+      %{ date: {2017, 09, 12}, title: "New Entry 3"}
+    ]
+    expected_result = %TodoList{
+      auto_id: 4,
+      entries: %{
+        1 => %{date: {2017, 9, 10}, id: 1, title: "New Entry"},
+        2 => %{date: {2017, 9, 11}, id: 2, title: "New Entry 2"},
+        3 => %{date: {2017, 9, 12}, id: 3, title: "New Entry 3"}
+        }
+      }
+
+    todo_list = for entry <- entries, into: TodoList.new, do: entry
+    assert expected_result == todo_list
+  end
 end
