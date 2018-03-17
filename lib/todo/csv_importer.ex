@@ -1,10 +1,10 @@
-defmodule TodoList.CsvImporter do
+defmodule Todo.CsvImporter do
 
   def import(path) do
     path
     |> filter_lines!
     |> create_entries!
-    |> TodoList.new
+    |> Todo.List.new
   end
 
     defp filter_lines!(path) do
