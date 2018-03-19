@@ -1,6 +1,5 @@
 defmodule Todo.List.Test do
   use ExUnit.Case
-  doctest Todo.List
 
   setup do
     {

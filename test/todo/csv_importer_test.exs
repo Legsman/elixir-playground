@@ -1,7 +1,6 @@
 defmodule Todo.CsvImporter.Test do
   use ExUnit.Case
   import TestHelper
-  doctest Todo.CsvImporter
 
   test "import entries from CSV" do
     expected_result = %Todo.List{
