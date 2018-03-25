@@ -29,11 +29,13 @@ defmodule Todo.Server.Test do
   test "can update entry of todo_list from Todo server", context do
     {:ok, pid} = Todo.Server.start(Todo.List.new(context[:entries]))
     assert :ok = Todo.Server.update_entry(pid, 1, &Map.put(&1, :title, "New"))
+    assert [%{date: {2017, 9, 10}, id: 1, title: "New"}] == Todo.Server.entries(pid, {2017, 09, 10})
   end
 
   test "can delete entry of todo_list from Todo server", context do
     {:ok, pid} = Todo.Server.start(Todo.List.new(context[:entries]))
     assert :ok == Todo.Server.delete_entry(pid, 2)
+    assert [] == Todo.Server.entries(pid, {2017, 09, 11})
   end
 
 end
