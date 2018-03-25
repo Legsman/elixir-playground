@@ -14,22 +14,26 @@ defmodule Todo.Server.Test do
   end
 
   test "can add to todo_list from Todo server", context do
-    assert {:cast, {:add_entry, %{date: {2017, 9, 10}, title: "New Entry"}}} == Todo.Server.add_entry(context[:todo_server], %{ date: {2017, 09, 10}, title: "New Entry"})
+    {:ok, pid} = context[:todo_server]
+    # Add the new entry asynchronously
+    assert :ok == Todo.Server.add_entry(pid, %{ date: {2017, 09, 10}, title: "New Entry"})
+    # Ensure the entry has correctly been added
+    assert [%{date: {2017, 9, 10}, id: 1, title: "New Entry"}] == Todo.Server.entries(pid, {2017, 09, 10})
   end
 
   test "can read entries of todo_list from Todo server", context do
-    todo_server = Todo.Server.start(Todo.List.new(context[:entries]))
-    assert [%{date: {2017, 9, 11}, id: 2, title: "New Entry 2"}] == Todo.Server.entries(todo_server, {2017, 9, 11})
+    {:ok, pid} = Todo.Server.start(Todo.List.new(context[:entries]))
+    assert [%{date: {2017, 9, 11}, id: 2, title: "New Entry 2"}] == Todo.Server.entries(pid, {2017, 9, 11})
   end
 
   test "can update entry of todo_list from Todo server", context do
-    todo_server = Todo.Server.start(Todo.List.new(context[:entries]))
-    assert {:cast, {:update_entry, 1, _ }} = Todo.Server.update_entry(todo_server, 1, &Map.put(&1, :title, "New Entry"))
+    {:ok, pid} = Todo.Server.start(Todo.List.new(context[:entries]))
+    assert :ok = Todo.Server.update_entry(pid, 1, &Map.put(&1, :title, "New"))
   end
 
   test "can delete entry of todo_list from Todo server", context do
-    todo_server = Todo.Server.start(Todo.List.new(context[:entries]))
-    assert {:cast, {:delete_entry, 2}} == Todo.Server.delete_entry(todo_server, 2)
+    {:ok, pid} = Todo.Server.start(Todo.List.new(context[:entries]))
+    assert :ok == Todo.Server.delete_entry(pid, 2)
   end
 
 end
