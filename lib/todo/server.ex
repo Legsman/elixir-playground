@@ -6,11 +6,11 @@ defmodule Todo.Server do
   end
 
   def start do
-    GenServer.start(Todo.Server, Todo.List.new)
+    GenServer.start(__MODULE__, Todo.List.new)
   end
 
   def start(todo_list) do
-    GenServer.start(Todo.Server, todo_list)
+    GenServer.start(__MODULE__, todo_list)
   end
 
   def add_entry(todo_server, new_entry) do

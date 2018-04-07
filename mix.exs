@@ -5,7 +5,7 @@ defmodule ElixirPlayground.Mixfile do
     [
       app: :elixir_playground,
       version: "0.1.0",
-      elixir: "~> 1.5",
+      elixir: "~> 1.6.4",
       start_permanent: Mix.env == :prod,
       deps: deps()
     ]
