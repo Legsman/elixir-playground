@@ -3,12 +3,19 @@
 defmodule Todo.Cache do
   use GenServer
 
-  def init(_) do
-    {:ok, Map.new}
+  @db_folder "./persist"
+
+  def init(todo_list) do
+    Todo.Database.start(@db_folder)
+    {:ok, todo_list || Map.new}
   end
 
   def start do
     GenServer.start(__MODULE__, nil)
+  end
+
+  def start(todo_list) do
+    GenServer.start(__MODULE__, todo_list)
   end
 
   def server_process(cache_pid, todo_list_name) do
@@ -22,7 +29,7 @@ defmodule Todo.Cache do
         {:reply, todo_server, todo_servers}
       :error ->
         # Server doesnt exist, create and return its PID
-        {:ok, new_server} = Todo.Server.start
+        {:ok, new_server} = Todo.Server.start(todo_list_name)
         {
           :reply,
           new_server,

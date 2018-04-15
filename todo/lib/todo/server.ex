@@ -1,16 +1,16 @@
 defmodule Todo.Server do
   use GenServer
 
-  def init(todo_list) do
-    {:ok, todo_list}
+  def init({name, todo_list}) do
+    {:ok, {name, Todo.Database.get(name) || todo_list}}
   end
 
-  def start do
-    GenServer.start(__MODULE__, Todo.List.new)
+  def start(name) do
+    GenServer.start(__MODULE__, {name, Todo.List.new})
   end
 
-  def start(todo_list) do
-    GenServer.start(__MODULE__, todo_list)
+  def start(name, todo_list) do
+    GenServer.start(__MODULE__, {name, todo_list})
   end
 
   def add_entry(todo_server, new_entry) do
@@ -29,19 +29,28 @@ defmodule Todo.Server do
     GenServer.cast(todo_server, {:delete_entry, entry_id})
   end
 
-  def handle_cast({:add_entry, new_entry}, todo_list) do
-    {:noreply, Todo.List.add_entry(todo_list, new_entry)}
+  def handle_cast({:add_entry, new_entry}, {name, todo_list}) do
+    new_state = Todo.List.add_entry(todo_list, new_entry)
+    # Persist the data in file database
+    Todo.Database.store(name, new_state)
+    {:noreply, {name, new_state}}
   end
 
-  def handle_cast({:update_entry, entry_id, update_fun}, todo_list) do
-    {:noreply, Todo.List.update_entry(todo_list, entry_id, update_fun)}
+  def handle_cast({:update_entry, entry_id, update_fun}, {name, todo_list}) do
+    new_state = Todo.List.update_entry(todo_list, entry_id, update_fun)
+    # Persist the data in file database
+    Todo.Database.store(name, new_state)
+    {:noreply, {name, todo_list}}
   end
 
-  def handle_cast({:delete_entry, entry_id}, todo_list) do
-    {:noreply, Todo.List.delete_entry(todo_list, entry_id)}
+  def handle_cast({:delete_entry, entry_id}, {name, todo_list}) do
+    new_state = Todo.List.delete_entry(todo_list, entry_id)
+    # Persist the data in file database
+    Todo.Database.store(name, new_state)
+    {:noreply, {name, todo_list}}
   end
 
-  def handle_call({:entries, date}, _, todo_list) do
-    {:reply, Todo.List.entries(todo_list, date), todo_list}
+  def handle_call({:entries, date}, _, {name, todo_list}) do
+    {:reply, Todo.List.entries(todo_list, date), {name, todo_list}}
   end
 end
