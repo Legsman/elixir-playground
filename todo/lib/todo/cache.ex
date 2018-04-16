@@ -3,10 +3,8 @@
 defmodule Todo.Cache do
   use GenServer
 
-  @db_folder "./persist"
-
   def init(todo_list) do
-    Todo.Database.start(@db_folder)
+    Todo.Database.start()
     {:ok, todo_list || Map.new}
   end
 

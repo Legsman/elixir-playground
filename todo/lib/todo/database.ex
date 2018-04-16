@@ -2,40 +2,66 @@
 defmodule Todo.Database do
   use GenServer
 
-  def init(db_folder) do
-    File.mkdir_p!(db_folder)
-    {:ok, db_folder}
+  @moduledoc """
+    Process responsible for initializing database folder and workers to access it
+  """
+
+  @pool_size 3
+  @db_folder "./persist"
+
+  @doc """
+    Initialize database folder and database workers depending of the amount
+    specified in the @pool_size variable (default to 3)
+
+    Along with status, returns a tuple containing the database folder and
+    a zero-indexed based Map containing workers PID as values
+  """
+  def start do
+    GenServer.start(__MODULE__, nil, name: :database_server)
   end
 
-  def start(db_folder) do
-    GenServer.start(__MODULE__, db_folder, name: :database_server)
+  def init(_) do
+    File.mkdir_p!(@db_folder)
+    {:ok, init_database_workers()}
+  end
+
+  defp init_database_workers do
+    Map.new(0..(@pool_size - 1), fn x ->
+      {:ok, worker} = Todo.DatabaseWorker.start(@db_folder)
+      {x, worker}
+    end)
   end
 
   def store(key, data) do
-    GenServer.cast(:database_server, {:store, key, data})
+    get_worker(key)
+    |> Todo.DatabaseWorker.store(key, data)
   end
 
   def get(key) do
-    GenServer.call(:database_server, {:get, key})
+    get_worker(key)
+    |> Todo.DatabaseWorker.get(key)
   end
 
+  @doc """
+   Get database worker in intialized Map of Todo.Database for given key
+   return a tuple containing the PID of the database worker, or nil if not found
 
-  def handle_cast({:store, key, data}, db_folder) do
-    file_name(db_folder, key)
-    |> File.write!(:erlang.term_to_binary(data))
-    {:noreply, db_folder}
+   ## Examples
+      iex> worker = Todo.Database.get_worker('hey')
+      iex> is_pid(worker)
+      true
+  """
+  def get_worker(key) do
+    GenServer.call(:database_server, {:get_worker, key})
   end
 
-  def handle_call({:get, key}, _, db_folder) do
-    data = case File.read(file_name(db_folder, key)) do
-      # If found in file, convert binary contents to term
-      {:ok, contents} -> :erlang.binary_to_term(contents)
-      # Else, return nil
+  def handle_call({:get_worker, key}, _, workers) do
+    data = case Map.fetch(workers, :erlang.phash2(key, 3)) do
+      {:ok, worker} -> worker
       _ -> nil
     end
 
-    {:reply, data, db_folder}
+    {:reply, data, workers}
   end
 
-  defp file_name(db_folder, key), do: "#{db_folder}/#{key}"
 end

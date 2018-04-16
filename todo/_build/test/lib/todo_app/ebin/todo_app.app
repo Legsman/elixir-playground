@@ -5,7 +5,8 @@
                         'Elixir.Recursives','Elixir.ServerProcess',
                         'Elixir.Streams','Elixir.Todo.Cache',
                         'Elixir.Todo.CsvImporter','Elixir.Todo.Database',
-                        'Elixir.Todo.List','Elixir.Todo.Server']},
+                        'Elixir.Todo.DatabaseWorker','Elixir.Todo.List',
+                        'Elixir.Todo.Server']},
               {registered,[]},
               {vsn,"0.1.0"},
               {extra_applications,[logger]}]}.
