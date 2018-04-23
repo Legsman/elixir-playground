@@ -1,6 +1,6 @@
 defmodule Identicon do
   @moduledoc """
-  Turn a string into an Identicon
+  Turn a string into an Identicon (GitHub style!)
   """
 
   def main(input) do
