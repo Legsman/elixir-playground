@@ -107,7 +107,7 @@ defmodule Identicon do
 
   Return the image as binary, ready to be saved onto a file
   """
-  defp draw_image(%Identicon.Image{ color: color, pixel_map: pixel_map }) do
+  def draw_image(%Identicon.Image{ color: color, pixel_map: pixel_map }) do
     image = :egd.create(250, 250)
     fill = :egd.color(color)
 
@@ -121,7 +121,7 @@ defmodule Identicon do
   @doc """
   Save image onto a file named by thed original input
   """
-  defp save_image(image, input) do
+  def save_image(image, input) do
     File.write("#{input}.png", image)
   end
 
