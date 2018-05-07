@@ -11,6 +11,8 @@ defmodule Identicon do
     |> build_grid
     |> filter_odd_squares
     |> build_pixel_map
+    |> draw_image
+    |> save_image(input)
   end
 
   @doc """
@@ -34,7 +36,8 @@ defmodule Identicon do
   @doc """
   Pick the 3 first elements of the Identicon.Image hex input, which
   represents the r, g and b colors, and store it in the color attr of the Image struct,
-  returns the struct
+  which will be used to color each square of the Identicon
+  returns the struct updated with the color picked
 
     ## Examples
       iex> image = %Identicon.Image{hex: [62, 215, 220, 234, 242, 102, 202, 254, 240, 50, 185, 213, 219, 34, 71, 23]}
@@ -96,6 +99,30 @@ defmodule Identicon do
     end)
 
     %Identicon.Image{ image | pixel_map: pixel_map }
+  end
+
+  @doc """
+  Draw the actual image (250x250 px) and use the Erlang drawing library
+  to fill each squares of the pixel map with the color picked onto the image
+
+  Return the image as binary, ready to be saved onto a file
+  """
+  defp draw_image(%Identicon.Image{ color: color, pixel_map: pixel_map }) do
+    image = :egd.create(250, 250)
+    fill = :egd.color(color)
+
+    Enum.each(pixel_map, fn {start, stop} ->
+      :egd.filledRectangle(image, start, stop, fill)
+    end)
+
+    :egd.render(image)
+  end
+
+  @doc """
+  Save image onto a file named by thed original input
+  """
+  defp save_image(image, input) do
+    File.write("#{input}.png", image)
   end
 
 end
