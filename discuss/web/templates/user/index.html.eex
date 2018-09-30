@@ -1,0 +1,11 @@
+<div class="jumbotron">
+  <h2>All Users</h2>
+  <table>
+    <%= for user <- @users do %>
+      <tr>
+        <td><%= render "user.html", user: user %></td>
+        <td><%= link "View", to: user_path(@conn, :show, user.id) %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>
